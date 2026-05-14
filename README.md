@@ -64,6 +64,49 @@ Intentionally not implemented yet:
 - PDF/HTML/ticket rendering
 - QR image generation
 
+Homologation integration tests:
+
+- opt-in only
+- skipped by default during `dotnet test`
+- limited to smoke coverage without issuing new vouchers
+- currently cover:
+  - WSAA access ticket retrieval for `wsfe`
+  - `GetLastAuthorizedNumberAsync`
+  - optional `GetInvoiceAsync` against a known voucher number
+
+Environment variables:
+
+- `ARCANET_RUN_HOMOLOGATION_TESTS=true`
+- `ARCANET_TEST_CUIT`
+- `ARCANET_TEST_CERTIFICATE_PATH`
+- `ARCANET_TEST_CERTIFICATE_PASSWORD`
+- `ARCANET_TEST_POINT_OF_SALE`
+- `ARCANET_TEST_VOUCHER_TYPE`
+- `ARCANET_TEST_VOUCHER_TYPE_NAME`
+- `ARCANET_TEST_EXISTING_VOUCHER_NUMBER`
+- `ARCANET_TEST_HTTP_TIMEOUT_SECONDS`
+
+Example PowerShell session:
+
+```powershell
+$env:ARCANET_RUN_HOMOLOGATION_TESTS = "true"
+$env:ARCANET_TEST_CUIT = "20123456789"
+$env:ARCANET_TEST_CERTIFICATE_PATH = "C:\secrets\arca-homo.pfx"
+$env:ARCANET_TEST_CERTIFICATE_PASSWORD = "local-only-secret"
+$env:ARCANET_TEST_POINT_OF_SALE = "5"
+$env:ARCANET_TEST_VOUCHER_TYPE = "6"
+$env:ARCANET_TEST_VOUCHER_TYPE_NAME = "Factura B"
+$env:ARCANET_TEST_EXISTING_VOUCHER_NUMBER = "1234"
+dotnet test --filter "Category=Integration"
+```
+
+Operational notes:
+
+- do not commit certificates, passwords, tokens or third-party CUITs
+- keep these values in local secrets or environment variables only
+- the integration suite is intentionally read-only; it does not call `CreateInvoiceAsync`
+- issuing real homologation vouchers should remain a deliberate manual step until the team chooses an explicit issuance test strategy
+
 Validation usage:
 
 ```csharp

@@ -1066,9 +1066,16 @@ Conviene usar:
 - integration tests contra homologacion
 - desactivados por defecto
 - solo habilitados con variables de entorno y secretos locales
+- preferentemente separados de unit tests por `Trait/Category=Integration`
+- para una primera etapa conviene empezar con smoke tests sin efectos fiscales:
+  - login WSAA para `wsfe`
+  - consulta de ultimo autorizado
+  - consulta de comprobante existente si la app provee un numero ya emitido
+- no conviene automatizar de entrada tests que emitan nuevos comprobantes en cada corrida
 
 Variables sugeridas:
 
+- `ARCANET_RUN_HOMOLOGATION_TESTS`
 - `ARCANET_TEST_ENVIRONMENT`
 - `ARCANET_TEST_CUIT`
 - `ARCANET_TEST_CERTIFICATE_PATH`
