@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ARCANet.Tests/ARCANet.Tests.csproj" />
+  <Project Path="ARCANet/ARCANet.csproj" />
+</Solution>
