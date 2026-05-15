@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text;
 using ARCANet.Abstractions;
 
@@ -22,7 +21,15 @@ public sealed class HttpClientSoapTransport(HttpClient httpClient) : IArcaSoapTr
 
         using var response = await _httpClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ArcaSoapTransportException(
+                request.Endpoint,
+                request.SoapAction,
+                response.StatusCode,
+                body);
+        }
+
         return body;
     }
 }

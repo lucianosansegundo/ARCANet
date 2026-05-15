@@ -171,3 +171,4 @@ Documentation:
 
 - [Research document](docs/arca-afip-research.md)
 - [Compliance checklist](docs/compliance-checklist.md)
+- [Homologation setup](docs/homologation-setup.md)
