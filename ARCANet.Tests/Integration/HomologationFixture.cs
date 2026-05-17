@@ -1,4 +1,5 @@
 using ARCANet.Abstractions;
+using ARCANet.Authentication;
 using ARCANet.Invoices;
 using ARCANet.Qr;
 using ARCANet.Transport;
@@ -19,12 +20,14 @@ public sealed class HomologationFixture : IDisposable
             Timeout = Settings.HttpTimeout
         };
 
-        Transport = new HttpClientSoapTransport(_httpClient);
+        Transport = new RecordingSoapTransport(new HttpClientSoapTransport(_httpClient));
+        var accessTicketStore = new FileAccessTicketStore(Settings.AccessTicketStorePath);
         AccessTicketProvider = new WsaaAccessTicketProvider(
             new PfxCertificateProvider(Settings.CertificatePath, Settings.CertificatePassword),
             Transport,
             new SystemClock(),
-            new WsaaOptions());
+            new WsaaOptions(),
+            accessTicketStore);
 
         InvoiceClient = new InvoiceClient(
             new InvoiceRequestValidator(new SystemClock()),
@@ -36,7 +39,7 @@ public sealed class HomologationFixture : IDisposable
 
     internal HomologationTestSettings Settings { get; }
 
-    public IArcaSoapTransport Transport { get; }
+    public RecordingSoapTransport Transport { get; }
 
     public WsaaAccessTicketProvider AccessTicketProvider { get; }
 

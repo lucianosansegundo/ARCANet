@@ -1,4 +1,4 @@
-# Homologation Setup
+# Configuración de Homologación
 
 Guia breve para preparar credenciales de homologacion ARCA/AFIP y usarlas con los integration tests opt-in de `ARCANet`.
 
@@ -6,7 +6,7 @@ Importante:
 
 - `ARCANet` no reemplaza validacion contable/fiscal profesional.
 - No commitees certificados, claves privadas, passwords, tokens ni CUIT de terceros.
-- Los integration tests actuales de homologacion son de smoke testing y lectura controlada.
+- Los integration tests actuales de homologacion son smoke tests de lectura controlada.
 - La suite actual no emite comprobantes nuevos automaticamente.
 
 ## 1. Requisitos previos
@@ -18,6 +18,19 @@ Necesitas:
 - Un punto de venta habilitado para comprobantes electronicos por `Web Services`.
 - OpenSSL o herramienta equivalente para generar clave privada y CSR.
 - Un certificado de homologacion asociado al servicio `wsfe`.
+
+Relacion con el modo del POS:
+
+- si tu POS ofrece un "modo test", en `ARCANet` eso deberia mapearse a `ArcaEnvironment.Homologation`
+- el modo real/productivo deberia mapearse a `ArcaEnvironment.Production`
+- no conviene tratar ambos como el mismo entorno con solo distintas credenciales
+
+Motivo:
+
+- homologacion y produccion usan endpoints distintos
+- usan certificados distintos
+- usan relaciones/habilitaciones administrativas distintas
+- el cache de `Access Ticket` tambien debe quedar separado por ambiente
 
 Fuentes oficiales:
 
@@ -161,6 +174,15 @@ Requeridas:
 - `ARCANET_TEST_CERTIFICATE_PASSWORD`
 - `ARCANET_TEST_POINT_OF_SALE`
 
+Adicional para tests que emiten comprobantes nuevos:
+
+- `ARCANET_RUN_HOMOLOGATION_ISSUANCE_TESTS=true`
+
+Opcional recomendado para reusar el mismo `TA` entre corridas:
+
+- `ARCANET_TEST_ACCESS_TICKET_STORE_PATH`
+  - si no se informa, el default actual es una carpeta bajo `%TEMP%\ARCANet\HomologationAccessTickets`
+
 Opcionales:
 
 - `ARCANET_TEST_VOUCHER_TYPE`
@@ -176,10 +198,12 @@ Ejemplo en PowerShell:
 
 ```powershell
 $env:ARCANET_RUN_HOMOLOGATION_TESTS = "true"
+$env:ARCANET_RUN_HOMOLOGATION_ISSUANCE_TESTS = "true"
 $env:ARCANET_TEST_CUIT = "20123456789"
 $env:ARCANET_TEST_CERTIFICATE_PATH = "C:\secrets\arca-homo.pfx"
 $env:ARCANET_TEST_CERTIFICATE_PASSWORD = "tu-password-local"
 $env:ARCANET_TEST_POINT_OF_SALE = "5"
+$env:ARCANET_TEST_ACCESS_TICKET_STORE_PATH = "C:\tmp\arcanet-homo-access-tickets"
 $env:ARCANET_TEST_VOUCHER_TYPE = "6"
 $env:ARCANET_TEST_VOUCHER_TYPE_NAME = "Factura B"
 $env:ARCANET_TEST_EXISTING_VOUCHER_NUMBER = "1234"
@@ -201,6 +225,13 @@ Comportamiento actual:
   - obtencion de access ticket WSAA para `wsfe`
   - `GetLastAuthorizedNumberAsync`
   - `GetInvoiceAsync` sobre un comprobante ya existente
+- Los tests de homologacion usan un `FileAccessTicketStore` durable para poder recuperar un `TA` valido entre corridas separadas.
+- La suite de emision real queda desactivada salvo que tambien se configure `ARCANET_RUN_HOMOLOGATION_ISSUANCE_TESTS=true`.
+- Los casos de emision real automatizados actuales son:
+  - `Factura B`
+  - `Factura A`
+  - `Nota de Credito B`
+  - `Nota de Credito A`
 
 ## 9. Que verificar si algo falla
 
@@ -229,3 +260,5 @@ Caso observado util:
   - otra app, script o corrida previa ya abrio un `TA`
   - hay que esperar a que ese `TA` expire antes de volver a pedir otro
 - Para smoke tests repetidos, conviene reutilizar el mismo cache/proveedor de access ticket dentro de la misma corrida.
+- Los tests de homologacion de este repo ya usan `FileAccessTicketStore`, asi que pueden recuperar un `TA` valido de una corrida anterior si el store path sigue siendo el mismo.
+- Si queres resetear manualmente ese estado local, borra el directorio configurado en `ARCANET_TEST_ACCESS_TICKET_STORE_PATH` o deja que expire el `TA`.

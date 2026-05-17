@@ -9,4 +9,8 @@ public interface IArcaQrGenerator
     string BuildJson(ArcaQrPayload payload);
     string BuildBase64(ArcaQrPayload payload);
     Uri BuildUrl(ArcaQrPayload payload);
+    string BuildSvg(AuthorizedInvoice invoice, int pixelsPerModule = 20);
+    string BuildSvg(ArcaQrPayload payload, int pixelsPerModule = 20);
+    byte[] BuildPng(AuthorizedInvoice invoice, int pixelsPerModule = 20);
+    byte[] BuildPng(ArcaQrPayload payload, int pixelsPerModule = 20);
 }

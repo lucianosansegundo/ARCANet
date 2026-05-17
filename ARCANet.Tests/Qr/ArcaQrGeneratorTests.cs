@@ -93,6 +93,68 @@ public sealed class ArcaQrGeneratorTests
         Assert.Equal(7, payload.Version);
     }
 
+    [Fact]
+    public void BuildSvg_FromPayload_ReturnsSvgDocument()
+    {
+        var generator = new ArcaQrGenerator();
+        var payload = generator.BuildPayload(CreateAuthorizedInvoice());
+
+        var svg = generator.BuildSvg(payload, pixelsPerModule: 8);
+
+        Assert.Contains("<svg", svg, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("</svg>", svg, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void BuildSvg_FromInvoice_ReturnsSvgDocument()
+    {
+        var generator = new ArcaQrGenerator();
+
+        var svg = generator.BuildSvg(CreateAuthorizedInvoice(), pixelsPerModule: 6);
+
+        Assert.Contains("<svg", svg, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void BuildPng_FromPayload_ReturnsPngBytes()
+    {
+        var generator = new ArcaQrGenerator();
+        var payload = generator.BuildPayload(CreateAuthorizedInvoice());
+
+        var png = generator.BuildPng(payload, pixelsPerModule: 8);
+
+        Assert.True(png.Length > 8);
+        Assert.Equal(0x89, png[0]);
+        Assert.Equal((byte)'P', png[1]);
+        Assert.Equal((byte)'N', png[2]);
+        Assert.Equal((byte)'G', png[3]);
+    }
+
+    [Fact]
+    public void BuildPng_FromInvoice_ReturnsPngBytes()
+    {
+        var generator = new ArcaQrGenerator();
+
+        var png = generator.BuildPng(CreateAuthorizedInvoice(), pixelsPerModule: 6);
+
+        Assert.True(png.Length > 8);
+        Assert.Equal(0x89, png[0]);
+        Assert.Equal((byte)'P', png[1]);
+        Assert.Equal((byte)'N', png[2]);
+        Assert.Equal((byte)'G', png[3]);
+    }
+
+    [Fact]
+    public void BuildSvg_RejectsInvalidPixelsPerModule()
+    {
+        var generator = new ArcaQrGenerator();
+        var payload = generator.BuildPayload(CreateAuthorizedInvoice());
+
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() => generator.BuildSvg(payload, pixelsPerModule: 0));
+
+        Assert.Contains("Pixels per module", exception.Message, StringComparison.Ordinal);
+    }
+
     private static AuthorizedInvoice CreateAuthorizedInvoice() =>
         new()
         {

@@ -1,6 +1,7 @@
 using ARCANet.Abstractions;
 using ARCANet.Authentication;
 using ARCANet.Transport;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ARCANet.Wsaa;
 
@@ -31,9 +32,32 @@ internal sealed class WsaaClient
         _endpoint = WsaaEndpointResolver.Resolve(options);
     }
 
-    public async Task<AccessTicket> LoginAsync(string service, CancellationToken cancellationToken = default)
+    public Task<AccessTicket> LoginAsync(string service, CancellationToken cancellationToken = default)
     {
-        var certificate = await _certificateProvider.GetCertificateAsync(cancellationToken).ConfigureAwait(false);
+        ArgumentException.ThrowIfNullOrWhiteSpace(service);
+        return LoginWithCertificateAsync(
+            service,
+            _certificateProvider.GetCertificateAsync(cancellationToken),
+            cancellationToken);
+    }
+
+    public Task<AccessTicket> LoginAsync(
+        string service,
+        X509Certificate2 certificate,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(service);
+        ArgumentNullException.ThrowIfNull(certificate);
+
+        return LoginWithCertificateAsync(service, Task.FromResult(certificate), cancellationToken);
+    }
+
+    private async Task<AccessTicket> LoginWithCertificateAsync(
+        string service,
+        Task<X509Certificate2> certificateTask,
+        CancellationToken cancellationToken)
+    {
+        var certificate = await certificateTask.ConfigureAwait(false);
         var xml = _requestBuilder.BuildXml(service);
         var cms = _signer.Sign(xml, certificate);
         var envelope = WsaaSoapEnvelopeBuilder.BuildLoginCmsEnvelope(cms);

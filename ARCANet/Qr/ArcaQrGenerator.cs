@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using ARCANet.Abstractions;
 using ARCANet.Invoices;
+using QRCoder;
 
 namespace ARCANet.Qr;
 
@@ -81,6 +82,32 @@ public sealed class ArcaQrGenerator : IArcaQrGenerator
         return new Uri(url, UriKind.Absolute);
     }
 
+    public string BuildSvg(AuthorizedInvoice invoice, int pixelsPerModule = 20) =>
+        BuildSvg(BuildPayload(invoice), pixelsPerModule);
+
+    public string BuildSvg(ArcaQrPayload payload, int pixelsPerModule = 20)
+    {
+        ValidatePixelsPerModule(pixelsPerModule);
+
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(BuildUrl(payload).ToString(), QRCodeGenerator.ECCLevel.Q);
+        var qr = new SvgQRCode(data);
+        return qr.GetGraphic(pixelsPerModule);
+    }
+
+    public byte[] BuildPng(AuthorizedInvoice invoice, int pixelsPerModule = 20) =>
+        BuildPng(BuildPayload(invoice), pixelsPerModule);
+
+    public byte[] BuildPng(ArcaQrPayload payload, int pixelsPerModule = 20)
+    {
+        ValidatePixelsPerModule(pixelsPerModule);
+
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(BuildUrl(payload).ToString(), QRCodeGenerator.ECCLevel.Q);
+        var qr = new PngByteQRCode(data);
+        return qr.GetGraphic(pixelsPerModule);
+    }
+
     private static string MapAuthorizationCodeType(AuthorizationCodeType codeType) =>
         codeType switch
         {
@@ -107,5 +134,13 @@ public sealed class ArcaQrGenerator : IArcaQrGenerator
         }
 
         return long.Parse(rawValue, NumberStyles.None, CultureInfo.InvariantCulture);
+    }
+
+    private static void ValidatePixelsPerModule(int pixelsPerModule)
+    {
+        if (pixelsPerModule <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(pixelsPerModule), "Pixels per module must be greater than zero.");
+        }
     }
 }

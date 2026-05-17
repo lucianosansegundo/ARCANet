@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ARCANet.Persistence.Postgres/ARCANet.Persistence.Postgres.csproj" />
   <Project Path="ARCANet.Tests/ARCANet.Tests.csproj" />
   <Project Path="ARCANet/ARCANet.csproj" />
 </Solution>

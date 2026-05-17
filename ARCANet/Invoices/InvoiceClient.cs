@@ -1,6 +1,7 @@
 using ARCANet.Abstractions;
 using ARCANet.InternalInvoices;
 using ARCANet.Qr;
+using ARCANet.Transport;
 using ARCANet.Wsfev1;
 
 namespace ARCANet.Invoices;
@@ -85,11 +86,18 @@ public sealed class InvoiceClient : IInvoiceClient
         {
             throw;
         }
-        catch (Exception)
+        catch (ArcaSoapTransportException exception)
         {
             return new UnknownInvoiceResult(
                 BuildAttempt(request),
-                "Invoice submission could not be confirmed. Query before retrying.",
+                exception.Message,
+                ShouldQueryBeforeRetry: true);
+        }
+        catch (Exception exception)
+        {
+            return new UnknownInvoiceResult(
+                BuildAttempt(request),
+                $"Invoice submission could not be confirmed. Query before retrying. Technical detail: {BuildTechnicalErrorMessage(exception)}",
                 ShouldQueryBeforeRetry: true);
         }
     }
@@ -202,4 +210,7 @@ public sealed class InvoiceClient : IInvoiceClient
     private static InvoiceObservation MapObservation(WsfeResultIssue issue) => new(issue.Code, issue.Message);
 
     private static InvoiceRejection MapRejection(WsfeResultIssue issue) => new(issue.Code, issue.Message);
+
+    private static string BuildTechnicalErrorMessage(Exception exception) =>
+        $"{exception.GetType().Name}: {exception.Message}";
 }

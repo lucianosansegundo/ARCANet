@@ -1,14 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCANet</PackageId>
+    <PackageId>ARCANet.Persistence.Postgres</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Open source .NET library for ARCA/AFIP with WSAA, WSFEv1, QR generation, credit note helpers, and explicit fiscal result models.</Description>
-    <PackageTags>arca;afip;factura-electronica;wsaa;wsfev1;qr;dotnet</PackageTags>
+    <Description>Optional PostgreSQL access ticket persistence module for ARCANet, with durable storage and advisory-lock coordination per WSAA ticket key.</Description>
+    <PackageTags>arca;afip;postgres;postgresql;wsaa;ticket-store;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -22,8 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="QRCoder" Version="1.7.0" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.0" />
+    <PackageReference Include="Npgsql" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ARCANet\ARCANet.csproj" />
   </ItemGroup>
 
   <ItemGroup>

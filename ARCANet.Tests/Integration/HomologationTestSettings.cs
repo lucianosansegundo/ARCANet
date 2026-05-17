@@ -5,10 +5,12 @@ namespace ARCANet.Tests.Integration;
 internal sealed record HomologationTestSettings
 {
     public const string RunTestsVariable = "ARCANET_RUN_HOMOLOGATION_TESTS";
+    public const string RunIssuanceTestsVariable = "ARCANET_RUN_HOMOLOGATION_ISSUANCE_TESTS";
     public const string CuitVariable = "ARCANET_TEST_CUIT";
     public const string CertificatePathVariable = "ARCANET_TEST_CERTIFICATE_PATH";
     public const string CertificatePasswordVariable = "ARCANET_TEST_CERTIFICATE_PASSWORD";
     public const string PointOfSaleVariable = "ARCANET_TEST_POINT_OF_SALE";
+    public const string AccessTicketStorePathVariable = "ARCANET_TEST_ACCESS_TICKET_STORE_PATH";
     public const string VoucherTypeCodeVariable = "ARCANET_TEST_VOUCHER_TYPE";
     public const string VoucherTypeNameVariable = "ARCANET_TEST_VOUCHER_TYPE_NAME";
     public const string ExistingVoucherNumberVariable = "ARCANET_TEST_EXISTING_VOUCHER_NUMBER";
@@ -18,6 +20,7 @@ internal sealed record HomologationTestSettings
     public required string CertificatePath { get; init; }
     public string? CertificatePassword { get; init; }
     public required int PointOfSale { get; init; }
+    public required string AccessTicketStorePath { get; init; }
     public required int VoucherTypeCode { get; init; }
     public required string VoucherTypeName { get; init; }
     public long? ExistingVoucherNumber { get; init; }
@@ -46,6 +49,22 @@ internal sealed record HomologationTestSettings
         return errors.Count == 0 ? null : string.Join(" ", errors);
     }
 
+    public static string? GetIssuanceSkipReason()
+    {
+        var baseReason = GetSkipReason();
+        if (baseReason is not null)
+        {
+            return baseReason;
+        }
+
+        if (!IsIssuanceEnabled())
+        {
+            return $"Set {RunIssuanceTestsVariable}=true to enable homologation issuance tests.";
+        }
+
+        return null;
+    }
+
     public static HomologationTestSettings Load()
     {
         var skipReason = GetSkipReason();
@@ -60,6 +79,7 @@ internal sealed record HomologationTestSettings
             CertificatePath = Path.GetFullPath(GetRequired(CertificatePathVariable)),
             CertificatePassword = Environment.GetEnvironmentVariable(CertificatePasswordVariable),
             PointOfSale = ParseInt(GetRequired(PointOfSaleVariable), PointOfSaleVariable),
+            AccessTicketStorePath = ResolveAccessTicketStorePath(),
             VoucherTypeCode = ParseOptionalInt(Environment.GetEnvironmentVariable(VoucherTypeCodeVariable), 6),
             VoucherTypeName = Environment.GetEnvironmentVariable(VoucherTypeNameVariable) ?? "Factura B",
             ExistingVoucherNumber = ParseOptionalLong(Environment.GetEnvironmentVariable(ExistingVoucherNumberVariable)),
@@ -125,6 +145,12 @@ internal sealed record HomologationTestSettings
             "true",
             StringComparison.OrdinalIgnoreCase);
 
+    private static bool IsIssuanceEnabled() =>
+        string.Equals(
+            Environment.GetEnvironmentVariable(RunIssuanceTestsVariable),
+            "true",
+            StringComparison.OrdinalIgnoreCase);
+
     private static string GetRequired(string variableName) =>
         Environment.GetEnvironmentVariable(variableName)
         ?? throw new InvalidOperationException($"Missing required environment variable {variableName}.");
@@ -167,5 +193,16 @@ internal sealed record HomologationTestSettings
         }
 
         return long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+    }
+
+    private static string ResolveAccessTicketStorePath()
+    {
+        var configuredPath = Environment.GetEnvironmentVariable(AccessTicketStorePathVariable);
+        if (!string.IsNullOrWhiteSpace(configuredPath))
+        {
+            return Path.GetFullPath(configuredPath);
+        }
+
+        return Path.Combine(Path.GetTempPath(), "ARCANet", "HomologationAccessTickets");
     }
 }

@@ -9,6 +9,7 @@ internal sealed class WsfeSoapResponseParser
     public long? ParseLastAuthorizedNumber(string soapResponse)
     {
         var document = XDocument.Parse(soapResponse);
+        ThrowIfSoapFault(document, "WSFEv1 last authorized number");
         var cbteNro = document.Descendants().FirstOrDefault(x => x.Name.LocalName == "CbteNro")?.Value;
 
         if (long.TryParse(cbteNro, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed))
@@ -22,6 +23,7 @@ internal sealed class WsfeSoapResponseParser
     public WsfeInvoiceRecord? ParseCompConsultar(string soapResponse)
     {
         var document = XDocument.Parse(soapResponse);
+        ThrowIfSoapFault(document, "WSFEv1 invoice lookup");
         var errors = ParseIssues(document, "Err");
 
         if (errors.Any(x => x.Code == "602"))
@@ -84,8 +86,10 @@ internal sealed class WsfeSoapResponseParser
     public WsfeAuthorizationResponse ParseFeCaeSolicitar(string soapResponse)
     {
         var document = XDocument.Parse(soapResponse);
+        ThrowIfSoapFault(document, "WSFEv1 authorization");
         var header = document.Descendants().FirstOrDefault(x => x.Name.LocalName == "FeCabResp");
-        var detail = document.Descendants().FirstOrDefault(x => x.Name.LocalName == "FEDetResponse");
+        var detail = document.Descendants().FirstOrDefault(x =>
+            x.Name.LocalName is "FECAEDetResponse" or "FEDetResponse");
 
         if (header is null)
         {
@@ -221,4 +225,22 @@ internal sealed class WsfeSoapResponseParser
                 IssuedOn = ParseOptionalDateOnly(GetOptionalValue(x, "CbteFch"))
             })
             .ToArray();
+
+    private static void ThrowIfSoapFault(XDocument document, string operationName)
+    {
+        var fault = document.Descendants().FirstOrDefault(x => x.Name.LocalName == "Fault");
+        if (fault is null)
+        {
+            return;
+        }
+
+        var faultCode = fault.Descendants().FirstOrDefault(x => x.Name.LocalName == "faultcode" || x.Name.LocalName == "Code")?.Value;
+        var faultString = fault.Descendants().FirstOrDefault(x => x.Name.LocalName == "faultstring" || x.Name.LocalName == "Reason")?.Value;
+
+        var message = string.IsNullOrWhiteSpace(faultCode) && string.IsNullOrWhiteSpace(faultString)
+            ? $"{operationName} returned a SOAP fault."
+            : $"{operationName} returned a SOAP fault. Code: {faultCode ?? "(none)"}. Message: {faultString ?? "(none)"}";
+
+        throw new InvalidOperationException(message);
+    }
 }

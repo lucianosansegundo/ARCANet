@@ -61,7 +61,38 @@ public sealed class InvoiceClientTests
         var result = await client.CreateInvoiceAsync(request);
 
         var unknown = Assert.IsType<UnknownInvoiceResult>(result);
-        Assert.Equal("Invoice submission could not be confirmed. Query before retrying.", unknown.Reason);
+        Assert.Contains("Invoice submission could not be confirmed. Query before retrying.", unknown.Reason, StringComparison.Ordinal);
+        Assert.Contains("InvalidOperationException: transport failure", unknown.Reason, StringComparison.Ordinal);
+        Assert.True(unknown.ShouldQueryBeforeRetry);
+    }
+
+    [Fact]
+    public async Task CreateInvoiceAsync_PreservesSoapDiagnosticsInUnknownResult()
+    {
+        var request = TestInvoiceFactory.CreateValidFacturaARequest();
+        var validator = new InvoiceRequestValidator(new FakeClock());
+        var transport = new FakeSoapTransport(
+            BuildWsaaResponse(),
+            new ArcaSoapTransportException(
+                new Uri("https://wswhomo.afip.gov.ar/wsfev1/service.asmx"),
+                "http://ar.gov.afip.dif.FEV1/FECAESolicitar",
+                System.Net.HttpStatusCode.InternalServerError,
+                "<soap:Fault><faultstring>validation error</faultstring></soap:Fault>"));
+        var accessTickets = new WsaaAccessTicketProvider(
+            new FakeCertificateProvider(),
+            transport,
+            new FakeClock());
+        var client = new InvoiceClient(
+            validator,
+            new ArcaQrGenerator(),
+            accessTickets,
+            transport);
+
+        var result = await client.CreateInvoiceAsync(request);
+
+        var unknown = Assert.IsType<UnknownInvoiceResult>(result);
+        Assert.Contains("FECAESolicitar", unknown.Reason, StringComparison.Ordinal);
+        Assert.Contains("validation error", unknown.Reason, StringComparison.Ordinal);
         Assert.True(unknown.ShouldQueryBeforeRetry);
     }
 
@@ -251,7 +282,7 @@ public sealed class InvoiceClientTests
         {
             using var rsa = System.Security.Cryptography.RSA.Create(2048);
             var request = new System.Security.Cryptography.X509Certificates.CertificateRequest(
-                "CN=ARCANet Test",
+                "SERIALNUMBER=CUIT 20123456789, CN=ARCANet Test",
                 rsa,
                 System.Security.Cryptography.HashAlgorithmName.SHA256,
                 System.Security.Cryptography.RSASignaturePadding.Pkcs1);
