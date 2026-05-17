@@ -1,4 +1,4 @@
-# POS Readiness Plan
+# Plan de Readiness para POS
 
 Este documento traduce el estado actual de `ARCANet` a un roadmap concreto para usar la libreria como base de un `POS` real que facture con ARCA/AFIP.
 
@@ -24,7 +24,7 @@ Importante:
 Estado real hoy:
 
 - la base de autenticacion WSAA ya esta razonablemente encaminada
-- la persistencia de `Access Ticket` ya tiene opciones viables para local y para multi-instancia con PostgreSQL
+- la persistencia de tickets de acceso ya tiene opciones viables para local y para multi-instancia con PostgreSQL
 - la emision WSFEv1 base existe
 - la validacion local existe
 - la consulta de comprobantes y de ultimo autorizado existe

@@ -1,6 +1,6 @@
-# Access Ticket Persistence
+# Persistencia de Access Tickets
 
-Este documento define la estrategia recomendada para persistencia y reutilizacion de `Access Ticket`s (`TA`) de `WSAA` en `ARCANet`.
+Este documento define la estrategia recomendada para persistencia y reutilizacion de tickets de acceso (`TA`) de `WSAA` en `ARCANet`.
 
 ## Contexto
 
@@ -257,7 +257,7 @@ var accessTicketProvider = new WsaaAccessTicketProvider(
 
 Para una libreria OSS, la mejor UX para el consumidor suele ser:
 
-- `InMemoryAccessTicketStore` para casos simples o testing
+- `InMemoryAccessTicketStore` para casos simples o pruebas
 - `FileAccessTicketStore` para homologacion/local
 - `PostgresAccessTicketStore` para produccion y multi-instancia
 
@@ -425,7 +425,7 @@ Estado del problema de concurrencia hoy:
 
 ## Conclusion
 
-La persistencia de `Access Ticket` no es un detalle opcional de conveniencia. Es parte del diseño operativo correcto de una integracion con `WSAA`.
+La persistencia de tickets de acceso no es un detalle opcional de conveniencia. Es parte del diseño operativo correcto de una integracion con `WSAA`.
 
 La libreria debe:
 

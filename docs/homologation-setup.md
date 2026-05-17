@@ -14,7 +14,7 @@ Importante:
 Necesitas:
 
 - CUIT con clave fiscal.
-- Acceso al servicio `WSASS` para homologacion/testing.
+- Acceso al servicio `WSASS` para homologacion/pruebas.
 - Un punto de venta habilitado para comprobantes electronicos por `Web Services`.
 - OpenSSL o herramienta equivalente para generar clave privada y CSR.
 - Un certificado de homologacion asociado al servicio `wsfe`.
@@ -30,7 +30,7 @@ Motivo:
 - homologacion y produccion usan endpoints distintos
 - usan certificados distintos
 - usan relaciones/habilitaciones administrativas distintas
-- el cache de `Access Ticket` tambien debe quedar separado por ambiente
+- el cache de tickets de acceso tambien debe quedar separado por ambiente
 
 Fuentes oficiales:
 
@@ -72,7 +72,7 @@ Fuente oficial:
 
 ## 3. Obtener el certificado de homologacion en WSASS
 
-Para homologacion, ARCA publica que el certificado digital de testing se gestiona con `WSASS`.
+Para homologacion, ARCA publica que el certificado digital de pruebas se gestiona con `WSASS`.
 
 Pasos:
 
@@ -86,7 +86,7 @@ Pasos:
 
 Notas oficiales relevantes:
 
-- `WSASS` es para testing/homologacion, no para produccion.
+- `WSASS` es para pruebas/homologacion, no para produccion.
 - El `CUIT` del formulario debe coincidir con el incluido en el `CSR`.
 - El DN queda con formato `SERIALNUMBER=CUIT nnnnnnnnnnn, CN=xxxxx`.
 
@@ -235,7 +235,7 @@ Comportamiento actual:
 
 ## 9. Que verificar si algo falla
 
-Checklist rapido:
+Lista de verificacion rapida:
 
 - El certificado fue emitido por `WSASS` y es de homologacion.
 - El `PFX` contiene el certificado y la clave privada correcta.

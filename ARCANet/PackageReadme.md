@@ -1,35 +1,35 @@
 # ARCANet
 
-`ARCANet` is an open source .NET library for ARCA/AFIP focused on a safer, higher-level API for real applications.
+`ARCANet` es una libreria open source .NET para ARCA/AFIP enfocada en una API mas segura y de mas alto nivel para aplicaciones reales.
 
-Current core scope:
+Alcance actual del paquete principal:
 
-- WSAA authentication
-- WSFEv1 invoice issuance and lookup
-- QR payload/URL/SVG/PNG generation
-- explicit result modeling for authorized, rejected, and uncertain outcomes
-- homologation-first workflow
+- autenticacion WSAA
+- emision y consulta WSFEv1
+- generacion de QR como payload/URL/SVG/PNG
+- modelado explicito de resultados autorizados, rechazados e inciertos
+- flujo orientado primero a homologacion
 
-Current validated homologation flows:
+Flujos de homologacion ya validados:
 
 - Factura A
 - Factura B
 - Nota de Credito A
 - Nota de Credito B
 
-Important boundaries:
+Boundaries importantes:
 
-- numbering and voucher reservation stay in the consuming application
-- persistence of business invoices stays in the consuming application
-- `ARCANet` does not render full invoice PDFs or tickets
+- la numeracion y reserva de comprobantes siguen siendo responsabilidad de la app consumidora
+- la persistencia del comprobante de negocio sigue siendo responsabilidad de la app consumidora
+- `ARCANet` no renderiza PDFs ni tickets completos
 
-Related package:
+Paquete relacionado:
 
 - `ARCANet.Persistence.Postgres`
 
-Main repository documentation includes:
+La documentacion principal del repositorio incluye:
 
-- homologation setup
-- access ticket persistence
-- credit note usage
-- POS numbering and recovery guidance
+- configuracion de homologacion
+- persistencia de access tickets
+- uso de notas de credito
+- numeracion y recuperacion para POS

@@ -11,7 +11,7 @@ Objetivo de producto:
 - exponer una API de alto nivel
 - ocultar complejidad de WSAA, WSFEv1, SOAP, `token/sign` y modelos del WSDL
 - mantener el core generico y reusable
-- priorizar homologacion/testing antes que produccion
+- priorizar homologacion/pruebas antes que produccion
 - dejar preparados los bordes para rendering, PDF, QR image y otros servicios futuros
 
 ARCANet no debe ser un wrapper fino de `FECAESolicitar`. Debe ser una abstraccion fiscal/tecnica mas simple, mas segura y mas dificil de usar incorrectamente.
@@ -34,7 +34,7 @@ Incluye:
 - propuesta de API publica de alto nivel
 - limites entre SDK y aplicacion consumidora
 - estrategia de numeracion, concurrencia e idempotencia
-- estrategia de testing
+- estrategia de pruebas
 
 No incluye:
 
@@ -156,7 +156,7 @@ ARCANet deberia cumplir estos principios:
 
 1. La aplicacion consumidora prepara la solicitud de comprobante.
 2. La aplicacion reserva internamente un numero o prepara la emision bajo lock/transaccion.
-3. El SDK obtiene un `Access Ticket` WSAA para `wsfe`.
+3. El SDK obtiene un ticket de acceso WSAA para `wsfe`.
 4. El SDK invoca WSFEv1 con modelos propios internos.
 5. El SDK traduce la respuesta oficial a un resultado de alto nivel.
 6. Si hubo autorizacion con CAE:
@@ -1236,7 +1236,7 @@ Etapa 4:
 - mas comprobantes
 - evaluacion de WSMTXCA
 
-## 18. Checklist de cumplimiento fiscal/técnico para el MVP
+## 18. Lista de verificacion de cumplimiento fiscal/tecnico para el MVP
 
 Resumen ejecutivo del checklist:
 
@@ -1260,7 +1260,7 @@ Resumen ejecutivo del checklist:
   - regimens especiales
   - `WSMTXCA`
 
-Checklist detallado:
+Detalle del checklist:
 
 - [compliance-checklist.md](compliance-checklist.md)
 

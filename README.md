@@ -1,59 +1,58 @@
 # ARCANet
 
-Librería open source .NET para ARCA/AFIP enfocada en una API más segura y de más alto nivel para aplicaciones reales.
+Libreria open source .NET para ARCA/AFIP enfocada en una API mas segura y de mas alto nivel para aplicaciones reales.
 
 Alcance inicial:
 
-- WSAA authentication behind the scenes
-- WSFEv1 invoicing behind a domain-oriented API
-- Homologation/testing first
-- Factura A/B and Nota de Credito A/B
-- Voucher lookup and last authorized number helpers
-- Fiscal QR payload/URL generation
-- Local request validation, internal neutral mapping, and explicit result modeling
+- autenticacion WSAA detras de escena
+- facturacion WSFEv1 detras de una API orientada a dominio
+- homologacion y pruebas primero
+- `Factura A/B` y `Nota de Credito A/B`
+- helpers para consulta de comprobantes y ultimo autorizado
+- generacion de payload/URL/imagen del QR fiscal
+- validacion local de requests, mapping interno neutral y modelado explicito de resultados
 
 No objetivos del core inicial:
 
-- exposing SOAP/WSDL models as the public API
-- PDF, HTML or thermal ticket rendering
-- QR image generation
-- visual invoice templates
+- exponer modelos SOAP/WSDL como API publica
+- rendering de PDF, HTML o ticket termico
+- templates visuales de comprobantes
 
-Objetivos de diseño:
+Objetivos de diseno:
 
-- hide `token`, `sign`, `FECAESolicitar` and SOAP classes from consumers
-- keep the SDK generic and reusable
-- separate fiscal core concerns from rendering concerns
-- model authorized, rejected, observed and uncertain outcomes explicitly
+- ocultar `token`, `sign`, `FECAESolicitar` y clases SOAP al consumidor
+- mantener el SDK generico y reusable
+- separar preocupaciones del core fiscal y del rendering
+- modelar explicitamente resultados autorizados, rechazados y estados inciertos
 
 Estado actual:
 
-- public API scaffolding
-- local invoice validation
-- internal transport-neutral invoice submission mapping
-- WSAA core pieces implemented without WSDL proxies
-- WSFEv1 core pieces implemented without WSDL proxies
-- public `InvoiceClient` orchestration over validation + WSAA + WSFEv1 + QR
-- fiscal QR payload/JSON/Base64/URL/SVG/PNG generation
-- unit tests for validation, mapping, QR, WSAA, WSFEv1, and invoice orchestration
-- consulted invoice reconstruction from `FECompConsultar` for fiscal fields returned by ARCA
-- Phase 1 access ticket persistence contracts and store-backed WSAA reuse
-- homologation real issuance validated for Factura A/B and Nota de Credito A/B
-- not production-ready
+- andamiaje de API publica
+- validacion local de comprobantes
+- mapping interno neutral del request de emision
+- piezas core de WSAA implementadas sin proxies WSDL
+- piezas core de WSFEv1 implementadas sin proxies WSDL
+- `InvoiceClient` publico sobre validacion + WSAA + WSFEv1 + QR
+- generacion de QR fiscal como payload/JSON/Base64/URL/SVG/PNG
+- tests unitarios para validacion, mapping, QR, WSAA, WSFEv1 y orquestacion de invoices
+- reconstruccion consultada desde `FECompConsultar` para campos fiscales que devuelve ARCA
+- persistencia de access tickets WSAA con stores enchufables
+- homologacion real validada para `Factura A/B` y `Nota de Credito A/B`
+- todavia no listo para produccion
 
 Importante:
 
-- ARCANet does not replace professional accounting or tax validation
-- mutable regulatory thresholds and rules should be treated as configurable, not hardcoded business truths
-- `FECompConsultar` does not return every business/presentation field; callers should persist receiver display data and any additional audit data they need
-- access ticket reuse defaults to an in-memory `IAccessTicketStore`; applications can supply a custom durable store without changing the invoice API
+- `ARCANet` no reemplaza validacion contable/fiscal profesional
+- reglas regulatorias mutables y umbrales monetarios deben tratarse como configurables, no como verdades hardcodeadas
+- `FECompConsultar` no devuelve todos los campos de negocio/presentacion; la app consumidora debe persistir sus propios snapshots
+- el reuso de access tickets usa por defecto `IAccessTicketStore` en memoria; la app puede inyectar un store durable sin cambiar la API de invoices
 
 Implementado actualmente:
 
-- `CreateInvoiceRequest` and result models
+- `CreateInvoiceRequest` y modelos de resultado
 - `InvoiceRequestValidator`
 - `CreditNoteRequestFactory`
-- internal `InternalInvoiceSubmission` mapping
+- `InternalInvoiceSubmission` y mapping neutral interno
 - `ArcaQrGenerator`
 - `WsaaAccessTicketProvider`
 - `IAccessTicketStore`, `InMemoryAccessTicketStore`, `NullAccessTicketStore`
@@ -61,16 +60,16 @@ Implementado actualmente:
 - `Wsfev1Client`
 - `InvoiceClient`
 - `InvoiceSubmissionRecovery`
-- raw SOAP transport via `HttpClientSoapTransport`
+- transporte SOAP crudo via `HttpClientSoapTransport`
 
-Módulos opcionales de persistencia:
+Modulos opcionales de persistencia:
 
 - `ARCANet.Persistence.Postgres`
   - `PostgresAccessTicketStore`
   - `PostgresAccessTicketStoreOptions`
   - `PostgresAccessTicketStore.CreateInitializedAsync(...)`
 
-Persistencia de access tickets en PostgreSQL:
+## Persistencia de access tickets en PostgreSQL
 
 ```csharp
 using ARCANet.Persistence.Postgres;
@@ -93,21 +92,21 @@ var accessTicketProvider = new WsaaAccessTicketProvider(
     ticketStore);
 ```
 
-See [Access ticket persistence](docs/access-ticket-persistence.md) for store selection guidance and PostgreSQL setup details.
+Ver [Persistencia de access tickets](docs/access-ticket-persistence.md) para criterios de seleccion de store y detalles de configuracion.
 
-Selección de ambiente:
+## Seleccion de ambiente
 
-`ARCANet` already distinguishes between ARCA environments:
+`ARCANet` distingue explicitamente entre ambientes ARCA:
 
 - `ArcaEnvironment.Homologation`
 - `ArcaEnvironment.Production`
 
-El default actual es `Homologation`.
+El valor por defecto actual es `Homologation`.
 
 Para un POS, el mapeo habitual es:
 
-- POS "test mode" => `ArcaEnvironment.Homologation`
-- POS "real/live mode" => `ArcaEnvironment.Production`
+- modo test => `ArcaEnvironment.Homologation`
+- modo real => `ArcaEnvironment.Production`
 
 Ejemplo:
 
@@ -131,29 +130,28 @@ var wsfeOptions = new Wsfev1Options
 };
 ```
 
-Notes:
+Notas:
 
-- homologation and production use different endpoints
-- they also require the correct certificate, authorization, and point-of-sale setup for that environment
-- access ticket persistence keys already discriminate by environment, so homologation and production tickets are kept separate
+- homologacion y produccion usan endpoints distintos
+- tambien requieren certificado, autorizacion y punto de venta correctos para ese ambiente
+- las keys de persistencia de access tickets ya discriminan por ambiente
 
-Todavía no implementado intencionalmente:
+## Todavia no implementado intencionalmente
 
-- end-to-end verified WSAA authentication with real certificates
-- end-to-end verified WSFEv1 homologation flow with real credentials/certificates
-- WSDL proxies
-- PDF/HTML/ticket rendering
-- QR image generation
+- verificacion end-to-end de WSAA con certificados reales de produccion
+- verificacion end-to-end de WSFEv1 productivo con credenciales reales
+- proxies WSDL
+- rendering de PDF/HTML/ticket
 
-Integration tests de homologación:
+## Integration tests de homologacion
 
-- opt-in only
-- skipped by default during `dotnet test`
-- currently cover:
-  - WSAA access ticket retrieval for `wsfe`
+- son opt-in
+- quedan `skipped` por defecto durante `dotnet test`
+- hoy cubren:
+  - obtencion de access ticket WSAA para `wsfe`
   - `GetLastAuthorizedNumberAsync`
-  - optional `GetInvoiceAsync` against a known voucher number
-  - opt-in real issuance for:
+  - `GetInvoiceAsync` opcional contra un comprobante conocido
+  - emision real opt-in de:
     - `Factura B`
     - `Factura A`
     - `Nota de Credito B`
@@ -175,7 +173,7 @@ Variables de entorno:
 - `ARCANET_TEST_EXISTING_VOUCHER_NUMBER`
 - `ARCANET_TEST_HTTP_TIMEOUT_SECONDS`
 
-Ejemplo de sesión PowerShell:
+Ejemplo de sesion PowerShell:
 
 ```powershell
 $env:ARCANET_RUN_HOMOLOGATION_TESTS = "true"
@@ -200,20 +198,19 @@ dotnet test --filter "Category=Integration"
 
 Notas:
 
-- these tests use `Testcontainers` and require Docker
-- they validate the optional PostgreSQL persistence module against a real PostgreSQL instance
-- they are not required to consume the library in an application
+- estos tests usan `Testcontainers` y requieren Docker
+- validan el modulo opcional PostgreSQL contra una instancia real
+- no son necesarios para consumir la libreria desde una app
 
-Notas operativas:
+## Notas operativas
 
-- do not commit certificates, passwords, tokens or third-party CUITs
-- keep these values in local secrets or environment variables only
-- homologation tests now use a durable `FileAccessTicketStore` so repeated runs can recover a still-valid `TA`
-- the smoke suite is intentionally read-only
-- issuance tests are opt-in behind a second explicit flag because they generate real homologation vouchers
-- issuing real homologation vouchers should remain a deliberate manual step until the team chooses an explicit issuance test strategy
+- no commitees certificados, passwords, tokens ni CUIT de terceros
+- mantenelos en secretos locales o variables de entorno
+- los tests de homologacion usan `FileAccessTicketStore` durable para recuperar un `TA` vigente entre corridas
+- la suite smoke es intencionalmente de solo lectura
+- la suite de emision real esta detras de un segundo flag explicito porque genera comprobantes reales en homologacion
 
-Recuperación ante resultados inciertos:
+## Recuperacion ante resultados inciertos
 
 Si `CreateInvoiceAsync` devuelve `UnknownInvoiceResult`, el siguiente paso conservador es consultar ese mismo `PtoVta + Tipo + Numero` antes de decidir si un retry es seguro.
 
@@ -232,15 +229,15 @@ if (result is UnknownInvoiceResult unknown)
 }
 ```
 
-Notes:
+Notas:
 
-- `InvoiceSubmissionRecovery` only performs the post-error lookup and classifies `authorized` vs `still unconfirmed`
-- it does not reserve numbers, persist attempts, or decide automatic retries for your app
-- numeration and idempotency remain application responsibilities
+- `InvoiceSubmissionRecovery` solo hace la consulta post-error y clasifica "autorizado" vs "todavia no confirmado"
+- no reserva numeros, no persiste intentos y no decide retries automaticos por tu app
+- numeracion e idempotencia siguen siendo responsabilidad de la app
 
-Helpers para notas de crédito:
+## Helpers para notas de credito
 
-Si ya tenés la factura original autorizada, la forma recomendada de construir una nota de crédito es derivarla desde ese comprobante en lugar de reconstruir a mano todos los campos asociados.
+Si ya tenes la factura original autorizada, la forma recomendada de construir una nota de credito es derivarla desde ese comprobante en lugar de reconstruir a mano todos los campos asociados.
 
 ```csharp
 using ARCANet.Invoices;
@@ -277,15 +274,15 @@ var request = CreditNoteRequestFactory.CreatePartial(
     ]);
 ```
 
-Notes:
+Notas:
 
-- automatic mapping currently supports `Factura A -> Nota de Credito A` and `Factura B -> Nota de Credito B`
-- the helper preserves receiver, currency, concept, and associated voucher data from the original invoice
-- partial credit notes require explicit totals and tax breakdown; the helper validates that they do not exceed the original invoice
+- el mapping automatico actual soporta `Factura A -> Nota de Credito A` y `Factura B -> Nota de Credito B`
+- el helper preserva receptor, moneda, concepto y comprobante asociado desde la factura original
+- para notas parciales, exige totales y desglose de impuestos explicitos, y valida que no excedan a la factura original
 
-Generación de imagen QR:
+## Generacion de imagen QR
 
-`ARCANet` ya puede generar el QR fiscal no solo como payload/URL, sino también como contenido de imagen para embeber en el template del POS.
+`ARCANet` puede generar el QR fiscal no solo como payload/URL, sino tambien como contenido de imagen para embeber en el template del POS.
 
 ```csharp
 using ARCANet.Qr;
@@ -296,13 +293,13 @@ string svg = qrGenerator.BuildSvg(authorizedInvoice);
 byte[] png = qrGenerator.BuildPng(authorizedInvoice);
 ```
 
-Notes:
+Notas:
 
-- this only generates the fiscal QR
-- it does not render the full invoice or ticket
-- the POS remains responsible for the final ticket/PDF/HTML layout
+- esto solo genera el QR fiscal
+- no renderiza el comprobante completo ni el ticket
+- el POS sigue siendo responsable del layout final PDF/HTML/ticket
 
-Uso de validación:
+## Uso de validacion
 
 ```csharp
 using ARCANet;
@@ -345,9 +342,9 @@ if (!validation.IsValid)
 }
 ```
 
-Forma de uso objetivo:
+## Forma de uso objetivo
 
-Esta es la forma objetivo de la API pública. La orquestación existe, pero no debe interpretarse como “lista para producción” solo por eso.
+Esta es la forma objetivo de la API publica. La orquestacion existe, pero no debe interpretarse como lista para produccion solo por eso.
 
 ```csharp
 using ARCANet.Abstractions;
@@ -362,12 +359,12 @@ if (result is AuthorizedInvoiceResult authorized)
 }
 ```
 
-Documentación:
+## Documentacion
 
-- [Research document](docs/arca-afip-research.md)
-- [Compliance checklist](docs/compliance-checklist.md)
-- [Homologation setup](docs/homologation-setup.md)
-- [Access ticket persistence](docs/access-ticket-persistence.md)
-- [Credit note usage](docs/credit-note-usage.md)
-- [POS numbering and recovery](docs/pos-numbering-and-recovery.md)
-- [POS readiness plan](docs/pos-readiness-plan.md)
+- [Documento de investigacion](docs/arca-afip-research.md)
+- [Lista de verificacion de cumplimiento](docs/compliance-checklist.md)
+- [Configuracion de homologacion](docs/homologation-setup.md)
+- [Persistencia de access tickets](docs/access-ticket-persistence.md)
+- [Uso de notas de credito](docs/credit-note-usage.md)
+- [Numeracion y recuperacion para POS](docs/pos-numbering-and-recovery.md)
+- [Plan de readiness para POS](docs/pos-readiness-plan.md)

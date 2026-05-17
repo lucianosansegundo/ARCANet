@@ -1,15 +1,15 @@
 # ARCANet.Persistence.Postgres
 
-Optional PostgreSQL persistence module for `ARCANet`.
+Modulo opcional de persistencia PostgreSQL para `ARCANet`.
 
-This package provides:
+Este paquete ofrece:
 
 - `PostgresAccessTicketStore`
 - `PostgresAccessTicketStoreOptions`
-- durable WSAA access ticket storage
-- advisory-lock coordination per ticket key
+- persistencia durable de access tickets WSAA
+- coordinacion por key usando advisory locks
 
-Typical use:
+Uso tipico:
 
 ```csharp
 using ARCANet.Persistence.Postgres;
@@ -23,12 +23,12 @@ await using var store = await PostgresAccessTicketStore.CreateInitializedAsync(
     });
 ```
 
-Recommended usage:
+Uso recomendado:
 
-- single-process/local: consider the core `InMemoryAccessTicketStore` or `FileAccessTicketStore`
-- production or multi-instance: use `PostgresAccessTicketStore`
+- proceso simple o local: considerar `InMemoryAccessTicketStore` o `FileAccessTicketStore`
+- produccion o multi-instancia: usar `PostgresAccessTicketStore`
 
-Important boundary:
+Limite importante:
 
-- this package persists WSAA access tickets
-- it does not solve invoice numbering or business idempotency for the consuming POS/application
+- este paquete persiste access tickets WSAA
+- no resuelve numeracion de comprobantes ni idempotencia de negocio del POS o de la aplicacion consumidora

@@ -1,4 +1,4 @@
-# Checklist de cumplimiento fiscal/técnico para el MVP
+# Lista de Verificacion de Cumplimiento Fiscal/Tecnico para el MVP
 
 Fecha del relevamiento: 2026-05-14
 
