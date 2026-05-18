@@ -107,16 +107,9 @@ public sealed class FileAccessTicketStore : IAccessTicketStore, IAccessTicketSto
         await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            using var semaphore = new Semaphore(initialCount: 1, maximumCount: 1, name: GetSemaphoreName(keyMaterial));
-            WaitForSemaphore(semaphore, cancellationToken);
-            try
-            {
-                return await action(cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                semaphore.Release();
-            }
+            Directory.CreateDirectory(_rootDirectory);
+            await using var lockStream = await AcquireKeyLockAsync(keyMaterial, cancellationToken).ConfigureAwait(false);
+            return await action(cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -137,19 +130,32 @@ public sealed class FileAccessTicketStore : IAccessTicketStore, IAccessTicketSto
     private static string BuildKeyMaterial(AccessTicketStoreKey key) =>
         $"{key.Environment}|{key.Service}|{key.RepresentedCuit}|{key.CertificateIdentifier}";
 
-    private static string GetSemaphoreName(string keyMaterial)
+    private string GetLockPath(string keyMaterial)
     {
         var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(keyMaterial)));
-        return $"Global\\ARCANet.AccessTicket.{hash}";
+        return Path.Combine(_rootDirectory, $"{hash}.lock");
     }
 
-    private static void WaitForSemaphore(Semaphore semaphore, CancellationToken cancellationToken)
+    private async Task<FileStream> AcquireKeyLockAsync(string keyMaterial, CancellationToken cancellationToken)
     {
-        var waitHandles = new WaitHandle[] { cancellationToken.WaitHandle, semaphore };
-        var signaled = WaitHandle.WaitAny(waitHandles);
-        if (signaled == 0)
+        var lockPath = GetLockPath(keyMaterial);
+
+        while (true)
         {
-            throw new OperationCanceledException(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                return new FileStream(
+                    lockPath,
+                    FileMode.OpenOrCreate,
+                    FileAccess.ReadWrite,
+                    FileShare.None);
+            }
+            catch (IOException)
+            {
+                await Task.Delay(25, cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

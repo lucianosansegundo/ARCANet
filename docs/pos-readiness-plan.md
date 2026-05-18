@@ -311,10 +311,16 @@ Entregables:
 - mas ejemplos de wiring
 - helpers de configuracion/DI si valen la pena
 - docs de seleccion de store por escenario
+- documentacion XML de la API publica antes de `1.0`
 
 Condicion de salida:
 
 - el consumo deja de sentirse "de bajo nivel"
+
+Nota:
+
+- `CS1591` esta silenciado temporalmente en los paquetes para evitar ruido en CI mientras la API sigue moviendose
+- antes de una `1.0.0`, la superficie publica debe quedar documentada con comentarios XML utiles y no solo con silenciamiento del warning
 
 ## 6. Orden recomendado de trabajo
 
