@@ -60,6 +60,7 @@ Implementado actualmente:
 - `Wsfev1Client`
 - `InvoiceClient`
 - `InvoiceSubmissionRecovery`
+- `TaxpayerRegistryClient`
 - transporte SOAP crudo via `HttpClientSoapTransport`
 
 Modulos opcionales de persistencia:
@@ -298,6 +299,40 @@ Notas:
 - esto solo genera el QR fiscal
 - no renderiza el comprobante completo ni el ticket
 - el POS sigue siendo responsable del layout final PDF/HTML/ticket
+
+## Consulta de padron por CUIT
+
+`ARCANet` puede consultar `ws_sr_constancia_inscripcion` para recuperar la constancia de inscripcion de un contribuyente y sugerir una condicion IVA del receptor en los casos comunes.
+
+```csharp
+using ARCANet.Taxpayers;
+
+var taxpayerClient = new TaxpayerRegistryClient(
+    certificateProvider,
+    accessTicketProvider,
+    transport,
+    new TaxpayerRegistryOptions
+    {
+        Environment = ArcaEnvironment.Homologation
+    });
+
+var taxpayer = await taxpayerClient.GetTaxpayerAsync(30712345678, cancellationToken);
+
+if (taxpayer?.SuggestedReceiverVatCondition is not null)
+{
+    request.ReceiverVatCondition = taxpayer.SuggestedReceiverVatCondition;
+}
+```
+
+Notas:
+
+- el cliente usa el servicio `ws_sr_constancia_inscripcion`
+- hoy la sugerencia automatica cubre de forma conservadora:
+  - `IVA Responsable Inscripto`
+  - `IVA Sujeto Exento`
+  - `Responsable Monotributo`
+- la validacion final del comprobante sigue haciendola ARCA al autorizar via WSFEv1
+- si el caso fiscal no entra claro en esas categorias, la condicion sugerida puede quedar `null` y la app debe decidirla
 
 ## Uso de validacion
 
