@@ -83,7 +83,7 @@ internal sealed record HomologationTestSettings
             VoucherTypeCode = ParseOptionalInt(Environment.GetEnvironmentVariable(VoucherTypeCodeVariable), 6),
             VoucherTypeName = Environment.GetEnvironmentVariable(VoucherTypeNameVariable) ?? "Factura B",
             ExistingVoucherNumber = ParseOptionalLong(Environment.GetEnvironmentVariable(ExistingVoucherNumberVariable)),
-            HttpTimeout = TimeSpan.FromSeconds(ParseOptionalInt(Environment.GetEnvironmentVariable(HttpTimeoutSecondsVariable), 45))
+            HttpTimeout = TimeSpan.FromSeconds(ParseOptionalInt(Environment.GetEnvironmentVariable(HttpTimeoutSecondsVariable), 90))
         };
     }
 

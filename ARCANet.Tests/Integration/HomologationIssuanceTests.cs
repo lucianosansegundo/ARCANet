@@ -358,6 +358,21 @@ public sealed class HomologationIssuanceTests(HomologationFixture fixture) : ICl
     {
         if (result is UnknownInvoiceResult unknown)
         {
+            var recovery = new InvoiceSubmissionRecovery(_fixture.InvoiceClient);
+            var reconciliation = recovery.ReconcileAsync(unknown).GetAwaiter().GetResult();
+            if (reconciliation is AuthorizedInvoiceReconciliationResult reconciled)
+            {
+                Assert.Equal(expectedIssuerCuit, reconciled.Invoice.IssuerCuit);
+                Assert.Equal(expectedPointOfSale, reconciled.Invoice.Series.PointOfSale);
+                Assert.Equal(expectedVoucherNumber, reconciled.Invoice.VoucherNumber);
+                Assert.Equal(AuthorizationCodeType.Cae, reconciled.Invoice.AuthorizationCodeType);
+                Assert.False(string.IsNullOrWhiteSpace(reconciled.Invoice.AuthorizationCode));
+                Assert.True(reconciled.Invoice.AuthorizationDueDate > DateOnly.MinValue);
+                Assert.NotNull(reconciled.Invoice.QrUrl);
+
+                return new AuthorizedInvoiceResult(reconciled.Invoice, []);
+            }
+
             var transport = _fixture.Transport;
             var lastAction = transport.LastRequest?.SoapAction ?? "(none)";
             var lastResponse = transport.LastResponseBody ?? "(none)";

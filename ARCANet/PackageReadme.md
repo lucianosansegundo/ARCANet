@@ -6,6 +6,7 @@ Alcance actual del paquete principal:
 
 - autenticacion WSAA
 - emision y consulta WSFEv1
+- consulta de padron `ws_sr_constancia_inscripcion`
 - generacion de QR como payload/URL/SVG/PNG
 - modelado explicito de resultados autorizados, rechazados e inciertos
 - flujo orientado primero a homologacion

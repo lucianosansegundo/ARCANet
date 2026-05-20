@@ -101,9 +101,9 @@ public sealed class InvoiceClientTests
     {
         var request = TestInvoiceFactory.CreateValidFacturaARequest();
         var validator = new InvoiceRequestValidator(new FakeClock());
-        var transport = new FakeSoapTransport(
-            BuildWsaaResponse(),
-            new OperationCanceledException("cancelled"));
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+        var transport = new FakeSoapTransport(BuildWsaaResponse());
         var accessTickets = new WsaaAccessTicketProvider(
             new FakeCertificateProvider(),
             transport,
@@ -114,7 +114,33 @@ public sealed class InvoiceClientTests
             accessTickets,
             transport);
 
-        await Assert.ThrowsAsync<OperationCanceledException>(() => client.CreateInvoiceAsync(request));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => client.CreateInvoiceAsync(request, cancellationTokenSource.Token));
+    }
+
+    [Fact]
+    public async Task CreateInvoiceAsync_MapsTransportTimeoutToUnknownResult()
+    {
+        var request = TestInvoiceFactory.CreateValidFacturaARequest();
+        var validator = new InvoiceRequestValidator(new FakeClock());
+        var transport = new FakeSoapTransport(
+            BuildWsaaResponse(),
+            new TaskCanceledException("The request was canceled due to timeout."));
+        var accessTickets = new WsaaAccessTicketProvider(
+            new FakeCertificateProvider(),
+            transport,
+            new FakeClock());
+        var client = new InvoiceClient(
+            validator,
+            new ArcaQrGenerator(),
+            accessTickets,
+            transport);
+
+        var result = await client.CreateInvoiceAsync(request);
+
+        var unknown = Assert.IsType<UnknownInvoiceResult>(result);
+        Assert.Contains("Query before retrying", unknown.Reason, StringComparison.Ordinal);
+        Assert.Contains("TaskCanceledException", unknown.Reason, StringComparison.Ordinal);
+        Assert.True(unknown.ShouldQueryBeforeRetry);
     }
 
     [Fact]

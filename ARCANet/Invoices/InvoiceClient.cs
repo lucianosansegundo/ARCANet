@@ -82,9 +82,16 @@ public sealed class InvoiceClient : IInvoiceClient
                     .Concat(response.Events.Select(MapObservation))
                     .ToArray());
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             throw;
+        }
+        catch (OperationCanceledException exception)
+        {
+            return new UnknownInvoiceResult(
+                BuildAttempt(request),
+                $"Invoice submission timed out or was canceled before confirmation. Query before retrying. Technical detail: {BuildTechnicalErrorMessage(exception)}",
+                ShouldQueryBeforeRetry: true);
         }
         catch (ArcaSoapTransportException exception)
         {
