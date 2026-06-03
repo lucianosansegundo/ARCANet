@@ -1,5 +1,8 @@
 <Solution>
   <Project Path="ARCANet.Persistence.Postgres/ARCANet.Persistence.Postgres.csproj" />
+  <Project Path="ARCANet.Rendering/ARCANet.Rendering.csproj" />
+  <Project Path="ARCANet.Rendering.Pdf/ARCANet.Rendering.Pdf.csproj" />
   <Project Path="ARCANet.Tests/ARCANet.Tests.csproj" />
   <Project Path="ARCANet/ARCANet.csproj" />
+  <Project Path="samples/ARCANet.Rendering.Sample/ARCANet.Rendering.Sample.csproj" />
 </Solution>

@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ARCANet\ARCANet.csproj" />
+    <ProjectReference Include="..\ARCANet.Rendering\ARCANet.Rendering.csproj" />
+    <ProjectReference Include="..\ARCANet.Rendering.Pdf\ARCANet.Rendering.Pdf.csproj" />
     <ProjectReference Include="..\ARCANet.Persistence.Postgres\ARCANet.Persistence.Postgres.csproj" />
   </ItemGroup>
 
