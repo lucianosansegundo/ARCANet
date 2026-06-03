@@ -1,14 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCANet</PackageId>
+    <PackageId>ARCANet.Rendering.Pdf</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Open source .NET library for ARCA/AFIP with WSAA, WSFEv1, QR generation, credit note helpers, and explicit fiscal result models.</Description>
-    <PackageTags>arca;afip;factura-electronica;wsaa;wsfev1;qr;dotnet</PackageTags>
+    <Description>Optional PDF rendering module for ARCANet authorized fiscal vouchers, including A4 and thermal receipt layouts.</Description>
+    <PackageTags>arca;afip;rendering;pdf;receipt;invoice;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,17 +17,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>ARCANet.Tests</_Parameter1>
-    </AssemblyAttribute>
+    <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="QRCoder" Version="1.7.0" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.0" />
+    <ProjectReference Include="..\ARCANet.Rendering\ARCANet.Rendering.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Fonts\*.ttf" />
+    <None Include="Fonts\OFL.txt" Pack="true" PackagePath="fonts\" />
     <None Include="PackageReadme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

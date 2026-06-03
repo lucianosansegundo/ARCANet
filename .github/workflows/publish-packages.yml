@@ -1,0 +1,43 @@
+name: Publish packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore ARCANet.slnx
+
+      - name: Test
+        run: dotnet test ARCANet.slnx --configuration Release --no-restore
+
+      - name: Pack
+        run: |
+          dotnet pack ARCANet/ARCANet.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+          dotnet pack ARCANet.Rendering/ARCANet.Rendering.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+          dotnet pack ARCANet.Rendering.Pdf/ARCANet.Rendering.Pdf.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+
+      - name: Publish to GitHub Packages
+        run: dotnet nuget push "./artifacts/packages/*.nupkg" --source "https://nuget.pkg.github.com/lucianosansegundo/index.json" --api-key "${{ secrets.GITHUB_TOKEN }}" --skip-duplicate
