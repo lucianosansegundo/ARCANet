@@ -111,7 +111,7 @@ internal sealed class WsfeSoapResponseParser
             Reprocess = reprocess,
             ProcessedAtUtc = processedAt,
             AuthorizationCode = authorizationCode,
-            AuthorizationDueDate = authorizationDueDateText is null ? null : ParseDateOnly(authorizationDueDateText),
+            AuthorizationDueDate = ParseOptionalDateOnly(authorizationDueDateText),
             Errors = ParseIssues(document, "Err"),
             Events = ParseIssues(document, "Evt"),
             Observations = detail is null ? [] : ParseWrappedIssues(detail, "Observaciones", "Obs")
