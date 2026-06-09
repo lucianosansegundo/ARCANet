@@ -206,6 +206,39 @@ Interpretacion:
 - `AuthorizedInvoiceReconciliationResult`: el comprobante existe en ARCA; no reintentes la emision
 - `UnconfirmedInvoiceReconciliationResult`: la consulta no lo confirmo; todavia no significa que sea seguro reintentar
 
+### Caso comun: reserva local reutilizada por retry
+
+En una app real, el caso peligroso no suele ser el primer intento feliz, sino el retry sobre una reserva local que ya existe.
+
+Ejemplo:
+
+```text
+IssuerCuit: 20287812265
+PointOfSale: 3
+VoucherType: 6
+VoucherNumber: 14
+Business key: sale:...:invoice:6
+```
+
+Si `CreateInvoiceAsync` devolvio `UnknownInvoiceResult` para esa reserva, el siguiente click del operador no debe volver a llamar directamente a `CreateInvoiceAsync` con el mismo numero. Primero debe consultar:
+
+```csharp
+var locator = new InvoiceLocator(
+    new VoucherSeries(
+        issuerCuit,
+        pointOfSale,
+        new VoucherType(voucherType, "Factura B")),
+    voucherNumber);
+
+var invoice = await invoiceClient.GetInvoiceAsync(locator, cancellationToken);
+```
+
+Si `invoice` no es `null`, el comprobante ya existe en ARCA. La app debe cerrar su intento local como `Authorized`, persistir CAE/numero/fechas/metadatos y no reemitir.
+
+Si `invoice` es `null`, el estado sigue requiriendo decision operativa. No significa automaticamente que sea seguro emitir otro numero ni reintentar sin auditoria.
+
+Los tests de homologacion que emiten con `GetLastAuthorizedNumberAsync + 1` validan el camino feliz del proximo numero disponible en ARCA. No cubren por si solos el caso de un POS que reusa una reserva local vieja, ambigua o ya autorizada.
+
 ## 9. Politica de retry recomendada
 
 Regla conservadora:

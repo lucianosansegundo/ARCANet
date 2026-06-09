@@ -188,4 +188,46 @@ public sealed class WsfeSoapResponseParserTests
         Assert.Single(response.Observations);
         Assert.Equal("10197", response.Observations[0].Code);
     }
+
+    [Fact]
+    public void ParseFeCaeSolicitar_TreatsEmptyAuthorizationDueDateAsMissing()
+    {
+        const string soap = """
+        <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+          <soap:Body>
+            <FECAESolicitarResponse>
+              <FECAESolicitarResult>
+                <FeCabResp>
+                  <FchProceso>20260609200242</FchProceso>
+                  <Resultado>R</Resultado>
+                  <Reproceso>N</Reproceso>
+                </FeCabResp>
+                <FeDetResp>
+                  <FEDetResponse>
+                    <Resultado>R</Resultado>
+                    <CAE></CAE>
+                    <CAEFchVto></CAEFchVto>
+                    <Observaciones>
+                      <Obs>
+                        <Code>10016</Code>
+                        <Msg>Invalid invoice request</Msg>
+                      </Obs>
+                    </Observaciones>
+                  </FEDetResponse>
+                </FeDetResp>
+              </FECAESolicitarResult>
+            </FECAESolicitarResponse>
+          </soap:Body>
+        </soap:Envelope>
+        """;
+
+        var parser = new WsfeSoapResponseParser();
+
+        var response = parser.ParseFeCaeSolicitar(soap);
+
+        Assert.Equal("R", response.DetailResult);
+        Assert.Null(response.AuthorizationDueDate);
+        Assert.Single(response.Observations);
+        Assert.Equal("10016", response.Observations[0].Code);
+    }
 }
