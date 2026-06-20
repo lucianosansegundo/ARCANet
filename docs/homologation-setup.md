@@ -191,13 +191,8 @@ Opcionales:
   - default actual: `Factura B`
 - `ARCANET_TEST_EXISTING_VOUCHER_NUMBER`
   - necesario solo para el test de `GetInvoiceAsync`
-- `ARCANET_TEST_TAXPAYER_CUIT`
-  - CUIT a consultar en `ws_sr_constancia_inscripcion`
-  - si no se informa, se usa `ARCANET_TEST_CUIT`
-  - para homologacion, `20000000516` es un CUIT de prueba conocido que puede devolver `errorConstancia`
 - `ARCANET_TEST_HTTP_TIMEOUT_SECONDS`
   - default actual: `45`
-  - para pruebas de padron en homologacion, usar `180` si el servicio responde con timeouts intermitentes
 
 Ejemplo en PowerShell:
 
@@ -212,8 +207,7 @@ $env:ARCANET_TEST_ACCESS_TICKET_STORE_PATH = "C:\tmp\arcanet-homo-access-tickets
 $env:ARCANET_TEST_VOUCHER_TYPE = "6"
 $env:ARCANET_TEST_VOUCHER_TYPE_NAME = "Factura B"
 $env:ARCANET_TEST_EXISTING_VOUCHER_NUMBER = "1234"
-$env:ARCANET_TEST_TAXPAYER_CUIT = "20000000516"
-$env:ARCANET_TEST_HTTP_TIMEOUT_SECONDS = "180"
+$env:ARCANET_TEST_HTTP_TIMEOUT_SECONDS = "45"
 ```
 
 ## 8. Ejecutar los integration tests
@@ -230,7 +224,6 @@ Comportamiento actual:
 - La suite smoke actual cubre:
   - obtencion de access ticket WSAA para `wsfe`
   - `GetLastAuthorizedNumberAsync`
-  - consulta de padron por CUIT con `TaxpayerRegistryClient`
   - `GetInvoiceAsync` sobre un comprobante ya existente
 - Los tests de homologacion usan un `FileAccessTicketStore` durable para poder recuperar un `TA` valido entre corridas separadas.
 - La suite de emision real queda desactivada salvo que tambien se configure `ARCANET_RUN_HOMOLOGATION_ISSUANCE_TESTS=true`.
@@ -248,7 +241,6 @@ Lista de verificacion rapida:
 - El `PFX` contiene el certificado y la clave privada correcta.
 - La `CUIT` del entorno coincide con la del `CSR` y con la representacion autorizada.
 - El servicio `wsfe` quedo autorizado.
-- Para consulta de padron, el servicio `ws_sr_constancia_inscripcion` quedo autorizado.
 - El punto de venta esta habilitado para `Web Services`.
 - El numero de comprobante configurado en `ARCANET_TEST_EXISTING_VOUCHER_NUMBER` realmente existe para ese `PtoVta + Tipo`.
 - El reloj local no esta desfasado de forma relevante.

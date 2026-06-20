@@ -2,7 +2,6 @@ using ARCANet.Abstractions;
 using ARCANet.Authentication;
 using ARCANet.Invoices;
 using ARCANet.Qr;
-using ARCANet.Taxpayers;
 using ARCANet.Transport;
 using ARCANet.Wsaa;
 using ARCANet.Wsfev1;
@@ -23,9 +22,8 @@ public sealed class HomologationFixture : IDisposable
 
         Transport = new RecordingSoapTransport(new HttpClientSoapTransport(_httpClient));
         var accessTicketStore = new FileAccessTicketStore(Settings.AccessTicketStorePath);
-        var certificateProvider = new PfxCertificateProvider(Settings.CertificatePath, Settings.CertificatePassword);
         AccessTicketProvider = new WsaaAccessTicketProvider(
-            certificateProvider,
+            new PfxCertificateProvider(Settings.CertificatePath, Settings.CertificatePassword),
             Transport,
             new SystemClock(),
             new WsaaOptions(),
@@ -37,12 +35,6 @@ public sealed class HomologationFixture : IDisposable
             AccessTicketProvider,
             Transport,
             new Wsfev1Options());
-
-        TaxpayerRegistryClient = new TaxpayerRegistryClient(
-            certificateProvider,
-            AccessTicketProvider,
-            Transport,
-            new TaxpayerRegistryOptions());
     }
 
     internal HomologationTestSettings Settings { get; }
@@ -52,8 +44,6 @@ public sealed class HomologationFixture : IDisposable
     public WsaaAccessTicketProvider AccessTicketProvider { get; }
 
     public InvoiceClient InvoiceClient { get; }
-
-    public TaxpayerRegistryClient TaxpayerRegistryClient { get; }
 
     public void Dispose() => _httpClient.Dispose();
 }

@@ -4,10 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCA.Fiscal.Persistence.Postgres</PackageId>
+    <PackageId>ARCANet.Persistence.Postgres</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Optional PostgreSQL access ticket persistence module for ARCA.Fiscal, with durable storage and advisory-lock coordination per WSAA ticket key.</Description>
+    <Description>Optional PostgreSQL access ticket persistence module for ARCANet, with durable storage and advisory-lock coordination per WSAA ticket key.</Description>
     <PackageTags>arca;afip;postgres;postgresql;wsaa;ticket-store;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

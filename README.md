@@ -65,7 +65,7 @@ Implementado actualmente:
 
 Modulos opcionales de persistencia:
 
-- `ARCA.Fiscal.Persistence.Postgres`
+- `ARCANet.Persistence.Postgres`
   - `PostgresAccessTicketStore`
   - `PostgresAccessTicketStoreOptions`
   - `PostgresAccessTicketStore.CreateInitializedAsync(...)`

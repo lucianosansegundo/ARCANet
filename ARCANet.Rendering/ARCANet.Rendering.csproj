@@ -4,10 +4,10 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCA.Fiscal.Rendering</PackageId>
+    <PackageId>ARCANet.Rendering</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Optional generic HTML receipt rendering module for ARCA.Fiscal, designed for authorized ARCA/AFIP vouchers plus POS display data.</Description>
+    <Description>Optional generic HTML receipt rendering module for ARCANet, designed for authorized ARCA/AFIP vouchers plus POS display data.</Description>
     <PackageTags>arca;afip;rendering;html;receipt;invoice;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

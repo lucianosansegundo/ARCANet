@@ -1,6 +1,6 @@
-# ARCA.Fiscal
+# ARCANet
 
-`ARCA.Fiscal` es el paquete NuGet principal de ARCANet, una libreria open source .NET para ARCA/AFIP enfocada en una API mas segura y de mas alto nivel para aplicaciones reales.
+`ARCANet` es una libreria open source .NET para ARCA/AFIP enfocada en una API mas segura y de mas alto nivel para aplicaciones reales.
 
 Alcance actual del paquete principal:
 
@@ -26,7 +26,7 @@ Boundaries importantes:
 
 Paquete relacionado:
 
-- `ARCA.Fiscal.Persistence.Postgres`
+- `ARCANet.Persistence.Postgres`
 
 La documentacion principal del repositorio incluye:
 

@@ -4,10 +4,10 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCA.Fiscal</PackageId>
+    <PackageId>ARCANet</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Open source .NET library for ARCA/AFIP fiscal integrations with WSAA, WSFEv1, QR generation, taxpayer lookup, credit note helpers, and explicit fiscal result models.</Description>
+    <Description>Open source .NET library for ARCA/AFIP with WSAA, WSFEv1, QR generation, credit note helpers, and explicit fiscal result models.</Description>
     <PackageTags>arca;afip;factura-electronica;wsaa;wsfev1;qr;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

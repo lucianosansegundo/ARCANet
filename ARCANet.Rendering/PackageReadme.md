@@ -1,6 +1,6 @@
-# ARCA.Fiscal.Rendering
+# ARCANet.Rendering
 
-Modulo opcional de rendering generico para `ARCA.Fiscal`.
+Modulo opcional de rendering generico para `ARCANet`.
 
 Este paquete ofrece:
 
@@ -15,7 +15,7 @@ Uso recomendado:
 
 - `HTML` generico para preview o impresion simple
 - `HTML` termico como salida principal para impresion en `58/80 mm`
-- si la aplicacion necesita `A4` documental, usar el modulo separado `ARCA.Fiscal.Rendering.Pdf`
+- si la aplicacion necesita `A4` documental, usar el modulo separado `ARCANet.Rendering.Pdf`
 
 Uso basico:
 
@@ -63,5 +63,5 @@ Boundary importante:
 - no numera
 - no persiste
 - no reemplaza templates propios del POS si la app necesita branding o layouts custom
-- la salida PDF vive en el modulo separado `ARCA.Fiscal.Rendering.Pdf`
+- la salida PDF vive en el modulo separado `ARCANet.Rendering.Pdf`
 - la salida termica cubre `58 mm` y `80 mm`, pero todavia requiere validacion real con navegador, driver e impresora concretos

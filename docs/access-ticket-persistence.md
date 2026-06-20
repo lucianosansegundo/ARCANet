@@ -129,16 +129,16 @@ Estado actual:
 
 ### Roadmap opcional
 
-- `ARCA.Fiscal.Persistence.Redis`
-- `ARCA.Fiscal.Persistence.EntityFramework`
-- `ARCA.Fiscal.Persistence.SqlServer`
+- `ARCANet.Persistence.Redis`
+- `ARCANet.Persistence.EntityFramework`
+- `ARCANet.Persistence.SqlServer`
 
 ### Store recomendado para ECS/RDS
 
 Si la app corre en `ECS/Fargate` y ya usa `PostgreSQL` en `RDS`, el store recomendado para produccion es:
 
 - `PostgresAccessTicketStore`
-- idealmente desde un package/modulo opcional como `ARCA.Fiscal.Persistence.Postgres`
+- idealmente desde un package/modulo opcional como `ARCANet.Persistence.Postgres`
 
 API recomendada del modulo PostgreSQL:
 
@@ -164,7 +164,7 @@ Estas implementaciones no deberian forzar dependencias de infraestructura en el 
 
 ## Uso de PostgreSQL
 
-Si una aplicacion necesita persistencia durable y coordinacion entre multiples instancias, la opcion recomendada es `ARCA.Fiscal.Persistence.Postgres`.
+Si una aplicacion necesita persistencia durable y coordinacion entre multiples instancias, la opcion recomendada es `ARCANet.Persistence.Postgres`.
 
 Escenario tipico:
 
@@ -177,8 +177,8 @@ Escenario tipico:
 
 El consumidor instala:
 
-- `ARCA.Fiscal`
-- `ARCA.Fiscal.Persistence.Postgres`
+- `ARCANet`
+- `ARCANet.Persistence.Postgres`
 
 ### 2. Elegir schema y tabla
 
@@ -265,7 +265,7 @@ Para una libreria OSS, la mejor UX para el consumidor suele ser:
 
 Los tests reales contra PostgreSQL son para mantenimiento y validacion del proyecto, no para el consumidor final de la libreria.
 
-El usuario que integra `ARCA.Fiscal.Persistence.Postgres` no deberia necesitar correr esos tests para usar el store en su app.
+El usuario que integra `ARCANet.Persistence.Postgres` no deberia necesitar correr esos tests para usar el store en su app.
 
 Estado actual:
 

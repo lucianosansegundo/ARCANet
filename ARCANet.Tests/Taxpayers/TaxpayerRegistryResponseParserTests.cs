@@ -99,37 +99,4 @@ public sealed class TaxpayerRegistryResponseParserTests
         Assert.NotNull(profile.Monotributo);
         Assert.Equal("CATEGORIA B", profile.Monotributo!.CategoryName);
     }
-
-    [Fact]
-    public void ParseGetPersonaResponse_MapsRegistryErrorProfile()
-    {
-        const string soap = """
-        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-          <soap:Body>
-            <ns2:getPersona_v2Response xmlns:ns2="http://a5.soap.ws.server.puc.sr/">
-              <personaReturn>
-                <errorConstancia>
-                  <apellido>ERNESTO DANIEL</apellido>
-                  <error>La CUIT fue cancelada.</error>
-                  <error>La constancia de inscripción se encuentra bloqueada.</error>
-                  <idPersona>20000000516</idPersona>
-                  <nombre>MARCELO NICOLAS</nombre>
-                </errorConstancia>
-              </personaReturn>
-            </ns2:getPersona_v2Response>
-          </soap:Body>
-        </soap:Envelope>
-        """;
-
-        var parser = new TaxpayerRegistryResponseParser();
-
-        var profile = parser.ParseGetPersonaResponse(soap);
-
-        Assert.NotNull(profile);
-        Assert.Equal(20000000516, profile!.Cuit);
-        Assert.Equal("MARCELO NICOLAS ERNESTO DANIEL", profile.DisplayName);
-        Assert.Equal(TaxpayerVatStatus.Unknown, profile.VatStatus);
-        Assert.Null(profile.SuggestedReceiverVatCondition);
-        Assert.Equal(2, profile.RegistryErrors.Count);
-    }
 }

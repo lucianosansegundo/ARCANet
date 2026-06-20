@@ -640,7 +640,7 @@ Por lo tanto:
 
 Se recomienda dejar documentado un paquete futuro:
 
-- `ARCA.Fiscal.Rendering` o `ARCA.Fiscal.Rendering.Pdf`
+- `ARCANet.Rendering` o `ARCANet.Pdf`
 
 Posibles responsabilidades futuras:
 
