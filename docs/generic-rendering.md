@@ -1,8 +1,8 @@
 # Rendering generico
 
-`ARCANet.Rendering` es el primer modulo opcional de rendering para comprobantes autorizados.
+`ARCA.Fiscal.Rendering` es el primer modulo opcional de rendering para comprobantes autorizados.
 
-Ahora tambien existe `ARCANet.Rendering.Pdf` como modulo separado para salida PDF.
+Ahora tambien existe `ARCA.Fiscal.Rendering.Pdf` como modulo separado para salida PDF.
 
 Objetivo de esta etapa:
 
@@ -17,7 +17,7 @@ Incluye en esta version:
 - `ReceiptRenderModel`
 - `IssuerDisplayInfo`
 - `ReceiptLineItem`
-- `ReceiptPdfRenderer` en el modulo `ARCANet.Rendering.Pdf`
+- `ReceiptPdfRenderer` en el modulo `ARCA.Fiscal.Rendering.Pdf`
 
 Boundary con el POS:
 
@@ -33,7 +33,7 @@ Formato recomendado segun uso:
 
 Limitaciones actuales:
 
-- `ARCANet.Rendering` solo genera `HTML`
+- `ARCA.Fiscal.Rendering` solo genera `HTML`
 - el `PDF` vive en un modulo separado
 - el modulo PDF apunta deliberadamente a una salida fiscal basica
 - el modulo PDF embebe sus propias fuentes para ser portable entre Windows, Linux y contenedores

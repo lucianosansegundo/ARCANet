@@ -1,6 +1,6 @@
-# ARCANet.Rendering.Pdf
+# ARCA.Fiscal.Rendering.Pdf
 
-Modulo opcional de PDF para `ARCANet`.
+Modulo opcional de PDF para `ARCA.Fiscal`.
 
 Este paquete ofrece:
 
@@ -8,12 +8,12 @@ Este paquete ofrece:
 - salida `A4`
 - salida termica continua para `80 mm`
 - salida termica continua para `58 mm`
-- reutilizacion del `ReceiptRenderModel` de `ARCANet.Rendering`
+- reutilizacion del `ReceiptRenderModel` de `ARCA.Fiscal.Rendering`
 
 Uso recomendado:
 
 - `A4` como salida principal cuando la aplicacion necesita descarga, archivo, mail o reimpresion consistente
-- para impresion termica pura, preferir `HTML` desde `ARCANet.Rendering` y dejar este modulo PDF como salida opcional o documental
+- para impresion termica pura, preferir `HTML` desde `ARCA.Fiscal.Rendering` y dejar este modulo PDF como salida opcional o documental
 
 Uso basico:
 

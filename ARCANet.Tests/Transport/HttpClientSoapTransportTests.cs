@@ -29,6 +29,30 @@ public sealed class HttpClientSoapTransportTests
         Assert.Contains("<soap:Fault>", exception.ResponseBody, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task SendAsync_DisablesPersistentConnections()
+    {
+        HttpRequestMessage? sentRequest = null;
+        var handler = new StubHttpMessageHandler(request =>
+        {
+            sentRequest = request;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("<soap:Envelope />")
+            };
+        });
+        using var httpClient = new HttpClient(handler);
+        var transport = new HttpClientSoapTransport(httpClient);
+
+        await transport.SendAsync(new ArcaSoapRequest(
+            new Uri("https://example.test/ws"),
+            string.Empty,
+            "<Envelope />"));
+
+        Assert.NotNull(sentRequest);
+        Assert.True(sentRequest!.Headers.ConnectionClose);
+    }
+
     private sealed class StubHttpMessageHandler(Func<HttpRequestMessage, HttpResponseMessage> responder) : HttpMessageHandler
     {
         private readonly Func<HttpRequestMessage, HttpResponseMessage> _responder = responder;

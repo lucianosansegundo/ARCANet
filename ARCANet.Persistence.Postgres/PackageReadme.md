@@ -1,6 +1,6 @@
-# ARCANet.Persistence.Postgres
+# ARCA.Fiscal.Persistence.Postgres
 
-Modulo opcional de persistencia PostgreSQL para `ARCANet`.
+Modulo opcional de persistencia PostgreSQL para `ARCA.Fiscal`.
 
 Este paquete ofrece:
 

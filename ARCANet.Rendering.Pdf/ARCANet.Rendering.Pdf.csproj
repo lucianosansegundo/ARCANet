@@ -4,10 +4,10 @@
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PackageId>ARCANet.Rendering.Pdf</PackageId>
+    <PackageId>ARCA.Fiscal.Rendering.Pdf</PackageId>
     <Version>0.1.0</Version>
     <Authors>ARCANet Contributors</Authors>
-    <Description>Optional PDF rendering module for ARCANet authorized fiscal vouchers, including A4 and thermal receipt layouts.</Description>
+    <Description>Optional PDF rendering module for ARCA.Fiscal authorized fiscal vouchers, including A4 and thermal receipt layouts.</Description>
     <PackageTags>arca;afip;rendering;pdf;receipt;invoice;dotnet</PackageTags>
     <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

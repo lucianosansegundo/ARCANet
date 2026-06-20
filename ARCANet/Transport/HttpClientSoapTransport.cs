@@ -12,6 +12,7 @@ public sealed class HttpClientSoapTransport(HttpClient httpClient) : IArcaSoapTr
         ArgumentNullException.ThrowIfNull(request);
 
         using var message = new HttpRequestMessage(HttpMethod.Post, request.Endpoint);
+        message.Headers.ConnectionClose = true;
         message.Content = new StringContent(request.Body, Encoding.UTF8, "text/xml");
 
         if (!string.IsNullOrWhiteSpace(request.SoapAction))

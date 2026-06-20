@@ -1,0 +1,60 @@
+name: Publish NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore ARCANet.slnx
+
+      - name: Test
+        run: dotnet test ARCANet.slnx --configuration Release --no-restore
+
+      - name: Pack
+        run: |
+          dotnet pack ARCANet/ARCANet.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+          dotnet pack ARCANet.Rendering/ARCANet.Rendering.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+          dotnet pack ARCANet.Rendering.Pdf/ARCANet.Rendering.Pdf.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+          dotnet pack ARCANet.Persistence.Postgres/ARCANet.Persistence.Postgres.csproj --configuration Release --no-restore --output ./artifacts/packages -p:PackageVersion=${{ inputs.version }}
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: lucianosansegundo
+
+      - name: Publish ARCA.Fiscal
+        run: dotnet nuget push "./artifacts/packages/ARCA.Fiscal.${{ inputs.version }}.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+      - name: Publish ARCA.Fiscal.Rendering
+        run: dotnet nuget push "./artifacts/packages/ARCA.Fiscal.Rendering.${{ inputs.version }}.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+      - name: Publish ARCA.Fiscal.Rendering.Pdf
+        run: dotnet nuget push "./artifacts/packages/ARCA.Fiscal.Rendering.Pdf.${{ inputs.version }}.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+
+      - name: Publish ARCA.Fiscal.Persistence.Postgres
+        run: dotnet nuget push "./artifacts/packages/ARCA.Fiscal.Persistence.Postgres.${{ inputs.version }}.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json" --skip-duplicate

@@ -19,4 +19,6 @@ public sealed record TaxpayerProfile
     public TaxpayerVatStatus VatStatus { get; init; }
 
     public ReceiverVatCondition? SuggestedReceiverVatCondition { get; init; }
+
+    public IReadOnlyList<string> RegistryErrors { get; init; } = [];
 }
