@@ -18,22 +18,33 @@ internal sealed class TaxpayerRegistryResponseParser
         }
 
         var general = GetChild(personaReturn, "datosGenerales");
+        var registryError = GetChild(personaReturn, "errorConstancia");
+        var profileNode = general ?? registryError;
         var generalTaxes = ParseGeneralTaxes(GetChild(personaReturn, "datosRegimenGeneral"));
         var monotributo = ParseMonotributo(GetChild(personaReturn, "datosMonotributo"));
         var vatStatus = InferVatStatus(generalTaxes, monotributo);
 
         return new TaxpayerProfile
         {
-            Cuit = ParseLong(GetChildValue(general, "idPersona")) ?? 0,
-            DisplayName = BuildDisplayName(general),
+            Cuit = ParseLong(GetChildValue(profileNode, "idPersona")) ?? 0,
+            DisplayName = BuildDisplayName(profileNode),
             PersonType = GetChildValue(general, "tipoPersona"),
             KeyStatus = GetChildValue(general, "estadoClave"),
             GeneralTaxes = generalTaxes,
             Monotributo = monotributo,
             VatStatus = vatStatus,
-            SuggestedReceiverVatCondition = MapSuggestedReceiverVatCondition(vatStatus)
+            SuggestedReceiverVatCondition = MapSuggestedReceiverVatCondition(vatStatus),
+            RegistryErrors = ParseRegistryErrors(registryError)
         };
     }
+
+    private static IReadOnlyList<string> ParseRegistryErrors(XElement? registryErrorNode) =>
+        registryErrorNode?
+            .Elements()
+            .Where(x => x.Name.LocalName == "error")
+            .Select(x => x.Value)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToArray() ?? [];
 
     private static IReadOnlyList<TaxpayerTax> ParseGeneralTaxes(XElement? regimeNode) =>
         regimeNode?

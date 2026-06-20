@@ -14,6 +14,7 @@ internal sealed record HomologationTestSettings
     public const string VoucherTypeCodeVariable = "ARCANET_TEST_VOUCHER_TYPE";
     public const string VoucherTypeNameVariable = "ARCANET_TEST_VOUCHER_TYPE_NAME";
     public const string ExistingVoucherNumberVariable = "ARCANET_TEST_EXISTING_VOUCHER_NUMBER";
+    public const string TaxpayerCuitVariable = "ARCANET_TEST_TAXPAYER_CUIT";
     public const string HttpTimeoutSecondsVariable = "ARCANET_TEST_HTTP_TIMEOUT_SECONDS";
 
     public required long Cuit { get; init; }
@@ -24,6 +25,7 @@ internal sealed record HomologationTestSettings
     public required int VoucherTypeCode { get; init; }
     public required string VoucherTypeName { get; init; }
     public long? ExistingVoucherNumber { get; init; }
+    public required long TaxpayerCuit { get; init; }
     public required TimeSpan HttpTimeout { get; init; }
 
     public static string? GetSkipReason()
@@ -83,6 +85,7 @@ internal sealed record HomologationTestSettings
             VoucherTypeCode = ParseOptionalInt(Environment.GetEnvironmentVariable(VoucherTypeCodeVariable), 6),
             VoucherTypeName = Environment.GetEnvironmentVariable(VoucherTypeNameVariable) ?? "Factura B",
             ExistingVoucherNumber = ParseOptionalLong(Environment.GetEnvironmentVariable(ExistingVoucherNumberVariable)),
+            TaxpayerCuit = ParseOptionalLong(Environment.GetEnvironmentVariable(TaxpayerCuitVariable)) ?? ParseLong(GetRequired(CuitVariable), CuitVariable),
             HttpTimeout = TimeSpan.FromSeconds(ParseOptionalInt(Environment.GetEnvironmentVariable(HttpTimeoutSecondsVariable), 90))
         };
     }
